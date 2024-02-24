@@ -1,0 +1,56 @@
+---
+- name: install node and npm
+  hosts: webserver
+  tasks:
+    - name: Update apt repo and cache
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+        cache_valid_time: 3600
+    - name: Install nodejs
+      apt:
+        pkg:
+          - nodejs
+          - npm
+
+- name: Create new linux user for node App
+  hosts: webserver
+  tasks:
+    - name: Create a new linux user
+      user:
+        name: nodeappile
+        comment: Ile user for nodejs app
+        state: present
+        groups: admin
+        shell: /bin/bash
+        password: $6$rounds=656000$
+      register: user_created_result
+    - debug: msg={{ user_created_result }}
+
+- name: Deploy nodejs application
+  hosts: webserver
+  become: True
+  become_user: nodeappile
+  tasks:
+    - name: Copy the nodejs application files to a server
+      copy:
+        src: /Users/ilemo/Desktop/ilen/node-app/react-nodejs-example/my-app-0.1.0.tgz
+        dest: /home/nodeappile/myapp-0.1.0.tgz
+    - name: Unpack the application
+      unarchive:
+        src: /home/nodeappile/myapp-0.1.0.tgz
+        dest: /home/nodeappile/
+        remote_src: yes
+    - name: Install dependencies
+      npm:
+        path: /home/nodeappile/package
+    - name: Start the application
+      command:
+        chdir: /home/nodeappile/app
+        cmd: node server.js
+        async: 1000
+        poll: 0
+    - name: Ensure App is running
+      shell: ps aux | grep node | grep -v grep
+      register: app_status
+    - debug: msg={{ app_status.stdout }}
