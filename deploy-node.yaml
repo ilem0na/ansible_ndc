@@ -7,11 +7,12 @@
         update_cache: yes
         force_apt_get: yes
         cache_valid_time: 3600
-    - name: Install nodejs
+    - name: Install nodejs | python3
       apt:
         pkg:
           - nodejs
           - npm
+          - python3
 
 - name: Create new linux user for node App
   hosts: webserver
