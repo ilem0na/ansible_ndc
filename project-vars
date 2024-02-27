@@ -1,0 +1,4 @@
+docker_password: xxxxx
+linux_name: ilemona
+user_home_dir: /home/{{linux_name}}
+location: /Users/ilemo
