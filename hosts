@@ -1,5 +1,5 @@
 [docker_server]
-54.242.36.159
+35.173.128.69
 
 [docker_server:vars]
 ansible_ssh_private_key_file=~/.ssh/id_rsa 
